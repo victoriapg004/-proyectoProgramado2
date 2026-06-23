@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from datetime import date
 
 
 class ActividadSchema(BaseModel):
     id: str
     nombre: str
-    fecha: str
+    fecha: date
     ubicacion: str
     capacidad_maxima: int
 

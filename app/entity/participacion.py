@@ -4,7 +4,7 @@ from app.config.database import Base
 
 class ParticipacionORM(Base):
 
-    __tablename__ = "participaciones"
+    __tablename__ = "participaciones_tb"
 
     id = Column(String(45), primary_key=True)
     voluntario_id = Column(String(45))

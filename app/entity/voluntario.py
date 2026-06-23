@@ -4,7 +4,7 @@ from app.config.database import Base
 
 class VoluntarioORM(Base):
 
-    __tablename__ = "voluntarios"
+    __tablename__ = "voluntario_tb"
 
     id = Column(String(45), primary_key=True)
     nombre = Column(String(100))

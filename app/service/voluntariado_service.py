@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from app.entity.voluntario import VoluntarioORM
 from app.entity.actividad import ActividadORM
@@ -12,7 +12,6 @@ from app.repository.participacion_repository import ParticipacionRepository
 class VoluntariadoService:
 
     def __init__(self):
-
         self.vol_repo = VoluntarioRepository()
         self.act_repo = ActividadRepository()
         self.part_repo = ParticipacionRepository()
@@ -26,6 +25,12 @@ class VoluntariadoService:
 
         if self.vol_repo.get(id):
             raise ValueError("Ya existe un voluntario con ese ID")
+
+        if not nombre.strip():
+            raise ValueError("Nombre requerido")
+
+        if not telefono.strip():
+            raise ValueError("Teléfono requerido")
 
         voluntario = VoluntarioORM(
             id=id,
@@ -47,9 +52,16 @@ class VoluntariadoService:
         if self.act_repo.get(id):
             raise ValueError("Ya existe una actividad con ese ID")
 
-        fecha_convertida = datetime.strptime(fecha, "%Y/%m/%d")
+        if not ubicacion.strip():
+            raise ValueError("Ubicación requerida")
 
-        if fecha_convertida.date() < datetime.now().date():
+        capacidad_maxima = int(capacidad_maxima)
+
+        # ✅ FastAPI ya convierte fecha a date automáticamente
+        if isinstance(fecha, str):
+            fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+
+        if fecha < date.today():
             raise ValueError("La fecha no puede ser anterior al día actual")
 
         actividad = ActividadORM(
@@ -85,8 +97,10 @@ class VoluntariadoService:
         if not actividad:
             raise ValueError("La actividad no existe")
 
+        horas = int(horas)
+
         if horas <= 0 or horas > 24:
-            raise ValueError("Las horas deben ser entre 1 y 24")
+            raise ValueError("Horas inválidas")
 
         participantes_actuales = 0
 
@@ -95,7 +109,7 @@ class VoluntariadoService:
                 participantes_actuales += 1
 
         if participantes_actuales >= actividad.capacidad_maxima:
-            raise ValueError("La actividad alcanzó su capacidad máxima")
+            raise ValueError("Actividad llena")
 
         participacion = ParticipacionORM(
             id=id,
@@ -116,17 +130,12 @@ class VoluntariadoService:
         acumulado = {}
 
         for p in self.part_repo.get_all():
-
-            if p.voluntario_id not in acumulado:
-                acumulado[p.voluntario_id] = 0
-
-            acumulado[p.voluntario_id] += p.horas
+            acumulado[p.voluntario_id] = acumulado.get(p.voluntario_id, 0) + p.horas
 
         if not acumulado:
             return None
 
         mejor_id = max(acumulado, key=acumulado.get)
-
         voluntario = self.vol_repo.get(mejor_id)
 
         return {
@@ -139,17 +148,12 @@ class VoluntariadoService:
         conteo = {}
 
         for p in self.part_repo.get_all():
-
-            if p.actividad_id not in conteo:
-                conteo[p.actividad_id] = 0
-
-            conteo[p.actividad_id] += 1
+            conteo[p.actividad_id] = conteo.get(p.actividad_id, 0) + 1
 
         if not conteo:
             return None
 
         mejor_id = max(conteo, key=conteo.get)
-
         actividad = self.act_repo.get(mejor_id)
 
         return {
@@ -162,7 +166,6 @@ class VoluntariadoService:
         total = 0
 
         for v in self.vol_repo.get_all():
-
             if v.estado.lower() == "activo":
                 total += 1
 

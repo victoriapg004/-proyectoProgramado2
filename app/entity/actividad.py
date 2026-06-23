@@ -4,7 +4,7 @@ from app.config.database import Base
 
 class ActividadORM(Base):
 
-    __tablename__ = "actividades"
+    __tablename__ = "actividades_tb"
 
     id = Column(String(45), primary_key=True)
     nombre = Column(String(100))
@@ -13,7 +13,6 @@ class ActividadORM(Base):
     capacidad_maxima = Column(Integer)
 
     def __init__(self, id, nombre, fecha, ubicacion, capacidad_maxima):
-
         self.id = id
         self.nombre = nombre
         self.fecha = fecha
