@@ -45,6 +45,22 @@ class VoluntariadoService:
     def get_voluntarios(self):
         return self.vol_repo.get_all()
 
+    def update_voluntario(self, id, nombre, telefono, tipo, estado):
+
+        voluntario = VoluntarioORM(
+            id=id,
+            nombre=nombre,
+            telefono=telefono,
+            tipo=tipo,
+            estado=estado
+        )
+
+        return self.vol_repo.update(voluntario)
+
+    def delete_voluntario(self, voluntario_id):
+
+        return self.vol_repo.delete(voluntario_id)
+
     # ---------------- ACTIVIDADES ----------------
 
     def register_actividad(self, id, nombre, fecha, ubicacion, capacidad_maxima):
@@ -76,6 +92,22 @@ class VoluntariadoService:
 
     def get_actividades(self):
         return self.act_repo.get_all()
+
+    def update_actividad(self, id, nombre, fecha, ubicacion, capacidad_maxima):
+
+        actividad = ActividadORM(
+            id=id,
+            nombre=nombre,
+            fecha=fecha,
+            ubicacion=ubicacion,
+            capacidad_maxima=capacidad_maxima
+        )
+
+        return self.act_repo.update(actividad)
+
+    def delete_actividad(self, actividad_id):
+
+        return self.act_repo.delete(actividad_id)
 
     # ---------------- PARTICIPACIONES ----------------
 
@@ -122,6 +154,21 @@ class VoluntariadoService:
 
     def get_participaciones(self):
         return self.part_repo.get_all()
+
+    def update_participacion(self, id, voluntario_id, actividad_id, horas):
+
+        participacion = ParticipacionORM(
+            id=id,
+            voluntario_id=voluntario_id,
+            actividad_id=actividad_id,
+            horas=horas
+        )
+
+        return self.part_repo.update(participacion)
+
+    def delete_participacion(self, participacion_id):
+
+        return self.part_repo.delete(participacion_id)
 
     # ---------------- REPORTES ----------------
 

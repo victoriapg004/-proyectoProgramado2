@@ -1,0 +1,29 @@
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from jose import jwt
+from jose.exceptions import JWTError
+
+SECRET_KEY = "clave"
+ALGORITHM = "HS256"
+
+security = HTTPBearer()
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+
+    if not credentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Token requerido para acceder"
+        )
+
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+
+    except JWTError:
+        raise HTTPException(
+            status_code=401,
+            detail="Token inválido"
+        )
