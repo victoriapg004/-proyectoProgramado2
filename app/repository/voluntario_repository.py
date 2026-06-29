@@ -5,9 +5,13 @@ from app.entity.voluntario import VoluntarioORM
 class VoluntarioRepository:
 
     def create(self, voluntario):
+
         db = SessionLocal()
+
         db.add(voluntario)
         db.commit()
+        db.refresh(voluntario)
+
         db.close()
 
         return voluntario

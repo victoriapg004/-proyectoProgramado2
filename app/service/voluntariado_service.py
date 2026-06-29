@@ -113,19 +113,18 @@ class VoluntariadoService:
 
     def register_participacion(self, id, voluntario_id, actividad_id, horas):
 
+
+        if not id.strip():
+            raise ValueError("El ID es obligatorio")
+
         if self.part_repo.get(id):
             raise ValueError("Ya existe una participación con ese ID")
 
         voluntario = self.vol_repo.get(voluntario_id)
-
         if not voluntario:
             raise ValueError("El voluntario no existe")
 
-        if voluntario.estado.lower() == "inactivo":
-            raise ValueError("El voluntario está inactivo")
-
         actividad = self.act_repo.get(actividad_id)
-
         if not actividad:
             raise ValueError("La actividad no existe")
 
@@ -134,13 +133,13 @@ class VoluntariadoService:
         if horas <= 0 or horas > 24:
             raise ValueError("Horas inválidas")
 
-        participantes_actuales = 0
-
+        # capacidad
+        participantes = 0
         for p in self.part_repo.get_all():
             if p.actividad_id == actividad_id:
-                participantes_actuales += 1
+                participantes += 1
 
-        if participantes_actuales >= actividad.capacidad_maxima:
+        if participantes >= actividad.capacidad_maxima:
             raise ValueError("Actividad llena")
 
         participacion = ParticipacionORM(
@@ -149,6 +148,9 @@ class VoluntariadoService:
             actividad_id=actividad_id,
             horas=horas
         )
+
+        actividad.capacidad_maxima -= 1
+        self.act_repo.update(actividad)
 
         return self.part_repo.create(participacion)
 
