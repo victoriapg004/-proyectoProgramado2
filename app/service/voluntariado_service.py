@@ -73,7 +73,7 @@ class VoluntariadoService:
 
         capacidad_maxima = int(capacidad_maxima)
 
-        # ✅ FastAPI ya convierte fecha a date automáticamente
+
         if isinstance(fecha, str):
             fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
 
@@ -133,7 +133,7 @@ class VoluntariadoService:
         if horas <= 0 or horas > 24:
             raise ValueError("Horas inválidas")
 
-        # capacidad
+
         participantes = 0
         for p in self.part_repo.get_all():
             if p.actividad_id == actividad_id:
